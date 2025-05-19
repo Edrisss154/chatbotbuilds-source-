@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ویجت چت هوش مصنوعی</title>
+  <link rel="stylesheet" href="styleskhanchatbot.css">
+</head>
+<body>
+
+
+<button id="chat-button" class="fixed bottom-6 right-6 z-50 bg-white p-4 rounded-full shadow-xl border border-gray-200 hover:bg-blue-500 transition-all animate-pulse relative">
+  <svg class="w-8 h-8 text-green-500 hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2a10 10 0 00-10 10c0 1.8.5 3.5 1.4 5l-1.4 4 4-1.4A10 10 0 0012 22a10 10 0 000-20z" />
+    <circle cx="9" cy="12" r="1" fill="#fff" />
+    <circle cx="12" cy="12" r="1" fill="#fff" />
+    <circle cx="15" cy="12" r="1" fill="#fff" />
+  </svg>
+  <div id="welcome-message-container" class="absolute bottom-16 right-0 z-60"></div>
+</button>
+<iframe id="chatbot-frame" src="http://localhost:5173/" style="display: none; position: fixed; bottom: 70px; right: 20px; width: 400px; height: 800px; border: none; border-radius: 12px; box-shadow: 0 0 12px rgba(0,0,0,0.3); z-index: 9999;"></iframe>
+<script src="scriptkhanchatbot.js"></script>
+
+
+
+</body>
+</html>

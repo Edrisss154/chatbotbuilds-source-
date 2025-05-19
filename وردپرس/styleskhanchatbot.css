@@ -1,0 +1,224 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  direction: rtl;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.gap-1 {
+  gap: 0.25rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
+}
+
+.bg-white\/90 {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(8px);
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-gray-800 {
+  color: #1f2937;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.-bottom-2 {
+  bottom: -0.5rem;
+}
+
+.left-1/2 {
+  left: 50%;
+}
+
+.transform {
+  transform: translateX(-50%);
+}
+
+.h-3 {
+  height: 0.75rem;
+}
+
+.w-3 {
+  width: 0.75rem;
+}
+
+.rotate-45 {
+  transform: rotate(45deg) translateX(-50%);
+}
+
+.h-5 {
+  height: 1.25rem;
+}
+
+.w-5 {
+  width: 1.25rem;
+}
+
+.text-emerald-400 {
+  color: #34d399;
+}
+
+#chat-button {
+  background: rgba(255, 255, 255, 1);
+  padding: 1rem;
+  border-radius: 9999px;
+  box-shadow: 0 20px 25px -5px rgba(0, 174, 255, 0.5), 0 10px 10px -5px rgba(0, 174, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease-in-out;
+  z-index: 1000;
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+}
+
+#chat-button:hover {
+  background: rgba(227, 235, 239, 0.9);
+}
+
+#welcome-message-container {
+  z-index: 1001;
+  bottom: 4rem;
+  right: 0;
+  min-width: 200px;
+}
+
+.w-8 {
+  width: 2rem;
+}
+
+.h-8 {
+  height: 2rem;
+}
+
+.text-green-500 {
+  color: #22c55e;
+}
+
+.hover\:scale-110:hover {
+  transform: scale(1.1);
+}
+
+.transition-transform {
+  transition: transform 0.2s ease-in-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes tada {
+  0% {
+    transform: scale(1);
+  }
+  10%, 20% {
+    transform: scale(0.9) rotate(-3deg);
+  }
+  30%, 50%, 70%, 90% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  40%, 60%, 80% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+.hover\:animate-tada:hover {
+  animation: tada 1s;
+}
