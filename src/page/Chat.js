@@ -731,7 +731,7 @@ table::-webkit-scrollbar-thumb:hover {
                 }`}
             >
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
               </svg>
             </button>
 
@@ -747,10 +747,10 @@ table::-webkit-scrollbar-thumb:hover {
                 onChange={(e) => setQuestion(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="سوال خود را بپرسید..."
-                className={`flex-1 p-3 sm:p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base resize-none overflow-y-auto ${
+                className={`flex-1 p-3 sm:p-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base resize-none overflow-y-auto custom-scrollbar ${
                     isDarkMode
                         ? 'bg-gray-800 text-white placeholder-gray-400'
-                        : 'bg-white text-gray-900 placeholder-gray-400 border border-gray-300'
+                        : 'bg-white text-gray-900 placeholder-gray-400 border border-gray-300 light'
                 } transition-all duration-200`}
                 style={{
                   minHeight: '40px',

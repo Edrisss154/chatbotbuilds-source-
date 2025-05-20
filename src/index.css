@@ -6,9 +6,53 @@
   html {
     direction: rtl;
   }
-  
+
   body {
     font-family: "IRANSans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+@layer utilities {
+  /* استایل‌های اسکرول‌بار برای textarea */
+  textarea.custom-scrollbar {
+    scrollbar-width: thin; /* برای فایرفاکس */
+  }
+
+  /* استایل‌های Webkit برای کروم و سافاری */
+  textarea.custom-scrollbar::-webkit-scrollbar {
+    width: 8px; /* عرض اسکرول‌بار */
+    height: 8px; /* ارتفاع اسکرول‌بار برای اسکرول افقی */
+  }
+
+  textarea.custom-scrollbar::-webkit-scrollbar-track {
+    background: #2D3748; /* رنگ پس‌زمینه track در حالت تاریک */
+    border-radius: 4px; /* گرد کردن گوشه‌ها */
+  }
+
+  textarea.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #4A5568; /* رنگ thumb در حالت تاریک */
+    border-radius: 4px; /* گرد کردن گوشه‌ها */
+  }
+
+  textarea.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #718096; /* رنگ thumb هنگام هاور */
+  }
+
+  /* استایل‌های حالت روشن */
+  .light textarea.custom-scrollbar {
+    scrollbar-color: #A0AEC0 #E2E8F0; /* رنگ thumb و track برای فایرفاکس (حالت روشن) */
+  }
+
+  .light textarea.custom-scrollbar::-webkit-scrollbar-track {
+    background: #E2E8F0; /* رنگ پس‌زمینه track در حالت روشن */
+  }
+
+  .light textarea.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #A0AEC0; /* رنگ thumb در حالت روشن */
+  }
+
+  .light textarea.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #7A8799; /* رنگ thumb هنگام هاور در حالت روشن */
   }
 }
 
@@ -19,7 +63,5 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-
