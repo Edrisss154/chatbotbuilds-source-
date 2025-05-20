@@ -7,21 +7,28 @@
   <link rel="stylesheet" href="styleskhanchatbot.css">
 </head>
 <body>
-
-
-<button id="chat-button" class="fixed bottom-6 right-6 z-50 bg-white p-4 rounded-full shadow-xl border border-gray-200 hover:bg-blue-500 transition-all animate-pulse relative">
-  <svg class="w-8 h-8 text-green-500 hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2a10 10 0 00-10 10c0 1.8.5 3.5 1.4 5l-1.4 4 4-1.4A10 10 0 0012 22a10 10 0 000-20z" />
-    <circle cx="9" cy="12" r="1" fill="#fff" />
-    <circle cx="12" cy="12" r="1" fill="#fff" />
-    <circle cx="15" cy="12" r="1" fill="#fff" />
-  </svg>
-  <div id="welcome-message-container" class="absolute bottom-16 right-0 z-60"></div>
-</button>
-<iframe id="chatbot-frame" src="http://localhost:5173/" style="display: none; position: fixed; bottom: 70px; right: 20px; width: 400px; height: 800px; border: none; border-radius: 12px; box-shadow: 0 0 12px rgba(0,0,0,0.3); z-index: 9999;"></iframe>
+<div class="chat-controls">
+  <button id="chat-button" class="chat-button animate-pulse">
+    <svg class="w-6 h-6 text-green-500 hover:scale-105 transition-transform" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 00-10 10c0 1.8.5 3.5 1.4 5l-1.4 4 4-1.4A10 10 0 0012 22a10 10 0 000-20z" />
+      <circle cx="9" cy="12" r="1" fill="#fff" />
+      <circle cx="12" cy="12" r="1" fill="#fff" />
+      <circle cx="15" cy="12" r="1" fill="#fff" />
+    </svg>
+  </button>
+  <button id="fullscreen-button" class="control-button" style="display: none;">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+    </svg>
+  </button>
+  <button id="close-button" class="control-button" style="display: none;">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
+</div>
+<div id="welcome-message-container" class="welcome-message"></div>
+<iframe id="chatbot-frame" src="http://localhost:5173/"></iframe>
 <script src="scriptkhanchatbot.js"></script>
-
-
-
 </body>
 </html>

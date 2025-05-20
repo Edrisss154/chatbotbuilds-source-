@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { askQuestion } from './api';
+import { askQuestion, fetchChatHistory } from './api';
 import SettingsModal from './SettingsModal';
 import SuggestedQuestions from './SuggestedQuestions';
 import parse, { domToReact } from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
+import { useTheme } from '../App';
 
-// انیمیشن‌ها (بدون تغییر)
+// انیمیشن‌ها
 const modalVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
@@ -29,6 +30,7 @@ const typingVariants = {
 };
 
 const Chat = ({ onClose, chatHistory, setChatHistory }) => {
+  const { isDark, sessionId } = useTheme();
   const [question, setQuestion] = useState('');
   const [error, setError] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -49,11 +51,47 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // useEffect‌ها (بدون تغییر)
+  // بارگذاری تاریخچه چت هنگام باز شدن کامپوننت
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      try {
+        const history = await fetchChatHistory(sessionId, 0, 10);
+        // اگر تاریخچه خالی است، فقط chatHistory را خالی تنظیم می‌کنیم
+        if (!history || history.length === 0) {
+          setChatHistory([]);
+          return;
+        }
+        // معکوس کردن ترتیب تاریخچه برای نمایش از قدیم به جدید
+        setChatHistory(
+            history.reverse().map((item) => ({
+              id: item.id.toString(),
+              type: item.role === 'user' ? 'question' : 'answer',
+              [item.role === 'user' ? 'text' : 'answer']: item.body,
+              timestamp: new Date(item.created_at),
+              isStreaming: false,
+              sources: item.sources || [],
+            }))
+        );
+      } catch (err) {
+        console.error('Error loading chat history:', err);
+        // فقط در صورتی خطا نمایش داده شود که مشکل واقعی وجود داشته باشد
+        if (err.message !== 'خطا در دریافت تاریخچه چت') {
+          setError('خطا در ارتباط با سرور');
+        } else {
+          setChatHistory([]); // در صورت خطای مربوط به تاریخچه، تاریخچه خالی نمایش داده شود
+        }
+      }
+    };
+
+    loadChatHistory();
+  }, [sessionId, setChatHistory]);
+
+  // اسکرول به انتهای چت
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
 
+  // پاک کردن خطا پس از 3 ثانیه
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
@@ -63,14 +101,17 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     }
   }, [error]);
 
+  // ذخیره تم در localStorage
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
+  // ذخیره تنظیمات دکمه اسکرول
   useEffect(() => {
     localStorage.setItem('showScroll', JSON.stringify(showScrollButtonByUser));
   }, [showScrollButtonByUser]);
 
+  // مدیریت دکمه اسکرول
   useEffect(() => {
     const updateScrollButtonVisibility = () => {
       const chatContainer = chatContainerRef.current;
@@ -109,6 +150,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     }
   }, [chatHistory]);
 
+  // تنظیم ارتفاع textarea
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -122,7 +164,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     const currentQuestion = suggestion || question;
     if (!currentQuestion.trim()) return;
 
-    setQuestion(''); // پاک کردن اینپوت
+    setQuestion('');
     setError(null);
 
     const questionId = uuidv4();
@@ -139,6 +181,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
 
     const ws = askQuestion(
         currentQuestion,
+        sessionId,
         (message) => {
           console.log('Handling message:', message);
 
@@ -189,7 +232,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
           finalizeResponse(answerId, answerBuffer, null, err.message);
         },
         () => {
-          console.log('WebSocket closed with code:', ws?.CLOSE_CODE || 'unknown');
+          console.log('WebSocket closed');
           finalizeResponse(answerId, isTableDetected && tableBuffer ? tableBuffer : answerBuffer);
         }
     );
@@ -306,6 +349,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
   };
 
   const preprocessHTML = (htmlContent) => {
+    if (typeof htmlContent !== 'string') return '';
     return htmlContent.replace(/[\u200e\u200f]/g, '');
   };
 
@@ -384,7 +428,14 @@ li {
   color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
   text-align: right;
 }
-
+a {
+  font-weight: bold;
+  color: #1E90FF;
+  text-decoration: underline;
+}
+a:hover {
+  color: #104E8B;
+}
 /* استایل‌های مخصوص موبایل */
 @media (max-width: 640px) {
   table {
@@ -432,9 +483,10 @@ table::-webkit-scrollbar-thumb:hover {
       ));
     } catch (err) {
       console.error('Error parsing HTML:', err);
-      return null;
+      return <span>خطا در نمایش محتوا</span>;
     }
   };
+
   return (
       <AnimatePresence>
         <motion.div

@@ -55,7 +55,6 @@ const messages = [
       </div>
     `,
   },
-
   {
     text: 'چه کمکی ازم برمیاد؟',
     icons: `
@@ -67,7 +66,6 @@ const messages = [
     `,
   }
 ];
-
 
 function showMessages() {
   const messageContainer = document.getElementById('welcome-message-container');
@@ -82,12 +80,10 @@ function showMessages() {
 
     const message = messages[currentMessageIndex];
     messageContainer.innerHTML = `
-      <div class="animate-fade-in-up flex items-center gap-2 rounded-xl bg-white/90 px-4 py-3 shadow-lg backdrop-blur-md">
+      <div class="flex items-center gap-2 animate-fade-in-up">
         ${message.icons}
-        <span class="text-sm font-medium text-gray-800">
-          ${message.text}
-        </span>
-        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-3 w-3 rotate-45 bg-white/90"></div>
+        <span class="text-sm font-medium text-gray-800">${message.text}</span>
+        <div class="triangle"></div>
       </div>
     `;
   }
@@ -102,18 +98,74 @@ function showMessages() {
       currentMessageIndex = (currentMessageIndex + 1) % messages.length;
       showMessage = true;
       updateMessage();
-    }, 1000); //  محو شدن پیام
-  }, 6000); // هر پیام 5 ثانیه نمایش داده می‌شود + 1 ثانیه تأخیر
+    }, 1000);
+  }, 6000);
 }
 
-document.getElementById('chat-button').addEventListener('click', () => {
+document.addEventListener('DOMContentLoaded', () => {
+  const chatButton = document.getElementById('chat-button');
+  const fullscreenButton = document.getElementById('fullscreen-button');
+  const closeButton = document.getElementById('close-button');
   const chatFrame = document.getElementById('chatbot-frame');
-  if (chatFrame.style.display === 'none') {
-    chatFrame.style.display = 'block';
-  } else {
+  const messageContainer = document.getElementById('welcome-message-container');
+
+  let isOpen = false;
+  let isFullscreen = false;
+
+  chatButton.addEventListener('click', () => {
+    isOpen = !isOpen;
+    chatFrame.style.display = isOpen ? 'block' : 'none';
+    chatButton.style.display = isOpen ? 'none' : 'block';
+    fullscreenButton.style.display = isOpen ? 'block' : 'none';
+    closeButton.style.display = isOpen ? 'block' : 'none';
+    messageContainer.style.display = isOpen ? 'none' : 'block';
+  });
+
+  fullscreenButton.addEventListener('click', () => {
+    if (!isFullscreen) {
+      chatFrame.style.width = '100vw';
+      chatFrame.style.height = '100vh';
+      chatFrame.style.top = '0';
+      chatFrame.style.left = '0';
+      chatFrame.style.right = '0';
+      chatFrame.style.bottom = '0';
+      chatFrame.style.borderRadius = '0';
+      isFullscreen = true;
+      fullscreenButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5" />';
+    } else {
+      chatFrame.style.width = '400px';
+      chatFrame.style.height = '600px';
+      chatFrame.style.top = 'auto';
+      chatFrame.style.left = 'auto';
+      chatFrame.style.right = '20px';
+      chatFrame.style.bottom = '70px';
+      chatFrame.style.borderRadius = '12px';
+      isFullscreen = false;
+      fullscreenButton.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />';
+    }
+  });
+
+  closeButton.addEventListener('click', () => {
+    isOpen = false;
     chatFrame.style.display = 'none';
-  }
+    chatButton.style.display = 'block';
+    fullscreenButton.style.display = 'none';
+    closeButton.style.display = 'none';
+    messageContainer.style.display = 'block';
+    isFullscreen = false;
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen) {
+      isOpen = false;
+      chatFrame.style.display = 'none';
+      chatButton.style.display = 'block';
+      fullscreenButton.style.display = 'none';
+      closeButton.style.display = 'none';
+      messageContainer.style.display = 'block';
+      isFullscreen = false;
+    }
+  });
+
+  showMessages();
 });
-
-
-document.addEventListener('DOMContentLoaded', showMessages);

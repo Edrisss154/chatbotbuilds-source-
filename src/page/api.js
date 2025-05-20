@@ -1,7 +1,6 @@
-const PYTHON_CHAT_DATA_SOURCE = 'ws://192.168.171.6:8000/ws/ask';
-
-// ارسال سوال به سرور از طریق WebSocket
-export const askQuestion = (question, onMessage, onError, onClose) => {
+// api.js
+export const askQuestion = (question, sessionId, onMessage, onError, onClose) => {
+  const PYTHON_CHAT_DATA_SOURCE = `ws://192.168.171.6:8000/ws/ask?session_id=${sessionId}`;
   console.log('Connecting to WebSocket:', PYTHON_CHAT_DATA_SOURCE);
   const ws = new WebSocket(PYTHON_CHAT_DATA_SOURCE);
 
@@ -13,7 +12,6 @@ export const askQuestion = (question, onMessage, onError, onClose) => {
 
   ws.onmessage = (event) => {
     console.log('Received raw message:', event.data);
-    // ارسال پیام خام بدون پارس کردن
     onMessage(event.data);
   };
 
@@ -33,4 +31,20 @@ export const askQuestion = (question, onMessage, onError, onClose) => {
       ws.close();
     },
   };
+};
+// api.js
+export const fetchChatHistory = async (sessionId, offset = 0, limit = 10) => {
+  try {
+    const response = await fetch(
+        `http://192.168.171.6:8000/chat/history/${sessionId}?offset=${offset}&limit=${limit}`
+    );
+    if (!response.ok) {
+      throw new Error('خطا در دریافت تاریخچه چت');
+    }
+    const data = await response.json();
+    return data; // فرض می‌کنیم API آرایه‌ای از پیام‌ها را برمی‌گرداند
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    throw error;
+  }
 };

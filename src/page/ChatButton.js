@@ -45,7 +45,7 @@
       setShowMessage(true);
       const openChatTimeout = setTimeout(() => {
         setIsOpen(true);
-      }, 2000);
+      }, 1000);
 
       const interval = setInterval(() => {
         setShowMessage(false);
