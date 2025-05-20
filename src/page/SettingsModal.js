@@ -16,7 +16,7 @@ const SettingsModal = ({
                            setShowScrollButtonByUser,
                        }) => {
     const handleOpenNewTab = () => {
-        window.open('http://185.143.206.114/', '_blank');
+        window.open('http://chat.satia.co/', '_blank');
         setShowSettingsModal(false);
     };
 
