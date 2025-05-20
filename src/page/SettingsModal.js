@@ -20,6 +20,13 @@ const SettingsModal = ({
         setShowSettingsModal(false);
     };
 
+    const handleReset = () => {
+        // پاک کردن تمام داده‌های localStorage
+        localStorage.clear();
+        // رفرش کردن صفحه
+        window.location.reload();
+    };
+
     return (
         <AnimatePresence>
             {showSettingsModal && (
@@ -123,15 +130,22 @@ const SettingsModal = ({
                                 </button>
                             </div>
                         </div>
-                        <div>
+                        <div className="mb-4">
                             <h4 className="text-sm font-semibold mb-2">باز کردن در تب جدید</h4>
                             <button
                                 onClick={handleOpenNewTab}
-                                className={`w-full p-2 rounded-lg transition-colors ${
-                                    'bg-blue-500 text-white'
-                                }`}
+                                className="w-full p-2 rounded-lg transition-colors bg-blue-500 text-white hover:bg-blue-600 dark:hover:bg-blue-700"
                             >
                                 باز کردن
+                            </button>
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-semibold mb-2">ریست و راه‌اندازی مجدد</h4>
+                            <button
+                                onClick={handleReset}
+                                className="w-full p-2 rounded-lg transition-colors bg-red-500 text-white hover:bg-red-600 dark:hover:bg-red-700"
+                            >
+                                ریست و راه‌اندازی مجدد
                             </button>
                         </div>
                     </motion.div>
