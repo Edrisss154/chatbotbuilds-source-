@@ -48,3 +48,18 @@ export const fetchChatHistory = async (sessionId, offset = 0, limit = 10) => {
     throw error;
   }
 };
+
+// api.js
+export const fetchWizards = async () => {
+  try {
+    const response = await fetch('http://192.168.171.6:8000/wizards');
+    if (!response.ok) {
+      throw new Error('خطا در دریافت لیست ویزارد‌ها');
+    }
+    const data = await response.json();
+    return data; // فرض می‌کنیم API آرایه‌ای از ویزارد‌ها را برمی‌گرداند
+  } catch (error) {
+    console.error('Error fetching wizards:', error);
+    throw error;
+  }
+};
