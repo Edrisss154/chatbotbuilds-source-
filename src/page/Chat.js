@@ -8,7 +8,7 @@ import parse, { domToReact } from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
 import { useTheme } from '../App';
 
-// انیمیشن‌ها
+
 const modalVariants = {
   hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
@@ -46,7 +46,6 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
   const chatContainerRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // بارگذاری تاریخچه چت
   useEffect(() => {
     const loadChatHistory = async () => {
       try {
@@ -77,12 +76,10 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     loadChatHistory();
   }, [sessionId, setChatHistory]);
 
-  // اسکرول به انتهای چت
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatHistory]);
 
-  // پاک کردن خطا پس از 3 ثانیه
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => setError(null), 3000);
@@ -90,12 +87,10 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     }
   }, [error]);
 
-  // ذخیره تم
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
-  // تنظیم ارتفاع textarea
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -377,7 +372,7 @@ a:hover {
 /* استایل‌های مخصوص موبایل */
 @media (max-width: 400px) {
   table {
-   min-width: 100%; /* حداقل عرض کمتر در موبایل */
+   min-width: 100%; 
     display: block;
     overflow-x: auto;
     white-space: nowrap;
@@ -385,7 +380,7 @@ a:hover {
   }
 
   table::-webkit-scrollbar {
-   //display: none; /* مخفی کردن اسکرول‌بار در Chrome/Safari */
+   //display: none; 
   }
 }
 </style>
@@ -590,26 +585,7 @@ a:hover {
                                     </ul>
                                   </div>
                                 )}
-                                {isLastAnswer && activeWebsockets[item.id] && item.isStreaming && (
-                                  <motion.div
-                                    variants={typingVariants}
-                                    initial="initial"
-                                    animate="animate"
-                                    className="flex items-center space-x-2 mt-2"
-                                  >
-                                    <div className="flex space-x-1">
-                                      <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"></div>
-                                      <div
-                                        className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"
-                                        style={{ animationDelay: '0.2s' }}
-                                      ></div>
-                                      <div
-                                        className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"
-                                        style={{ animationDelay: '0.4s' }}
-                                      ></div>
-                                    </div>
-                                  </motion.div>
-                                )}
+
                               </div>
                             </div>
                           )}
