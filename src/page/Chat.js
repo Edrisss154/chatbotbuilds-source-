@@ -375,18 +375,17 @@ a:hover {
 }
 
 /* استایل‌های مخصوص موبایل */
-@media (max-width: 640px) {
+@media (max-width: 400px) {
   table {
-    min-width: 0;
+   min-width: 100%; /* حداقل عرض کمتر در موبایل */
     display: block;
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* مخفی کردن اسکرول‌بار در Firefox */
   }
 
   table::-webkit-scrollbar {
-    display: none; /* مخفی کردن اسکرول‌بار در Chrome/Safari */
+   //display: none; /* مخفی کردن اسکرول‌بار در Chrome/Safari */
   }
 }
 </style>
@@ -490,134 +489,134 @@ a:hover {
               </div>
             ) : (
               <>
-                {chatHistory.map((item, index) => {
-                  const lastAnswerIndex = chatHistory
-                    .slice()
-                    .reverse()
-                    .findIndex((i) => i.type === 'answer');
-                  const lastAnswerPosition = lastAnswerIndex >= 0 ? chatHistory.length - 1 - lastAnswerIndex : -1;
-                  const isLastAnswer = item.type === 'answer' && index === lastAnswerPosition;
-                  const containsTable = item.type === 'answer' && hasTable(item.answer);
+                  {chatHistory.map((item, index) => {
+                    const lastAnswerIndex = chatHistory
+                      .slice()
+                      .reverse()
+                      .findIndex((i) => i.type === 'answer');
+                    const lastAnswerPosition = lastAnswerIndex >= 0 ? chatHistory.length - 1 - lastAnswerIndex : -1;
+                    const isLastAnswer = item.type === 'answer' && index === lastAnswerPosition;
+                    const containsTable = item.type === 'answer' && hasTable(item.answer);
 
-                  return (
-                    <div key={item.id}>
-                      {shouldShowDate(item, chatHistory[index - 1]) && (
-                        <div
-                          className={`text-center text-sm my-4 ${
-  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-}`}
-                        >
-                          <span
-                            className={`px-4 py-1 rounded-full ${
-  isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-700'
-}`}
+                    return (
+                      <div key={item.id}>
+                        {shouldShowDate(item, chatHistory[index - 1]) && (
+                          <div
+                            className={`text-center text-sm my-4 ${
+    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+  }`}
                           >
-                            {formatDate(item.timestamp)}
-                          </span>
-                        </div>
-                      )}
-                      <motion.div
-                        variants={itemVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="transition-all duration-200"
-                      >
-                        {item.type === 'question' ? (
-                          <div className="flex justify-start">
-                            <div
-                              className={`max-w-[90%] p-3 sm:p-4 rounded-2xl shadow-md ${
-  isDarkMode ? 'bg-[#2481CC] text-white' : 'bg-[#DCF8C6] text-gray-900'
-}`}
+                            <span
+                              className={`px-4 py-1 rounded-full ${
+    isDarkMode ? 'bg-gray-800 text-gray-300' : 'bg-gray-200 text-gray-700'
+  }`}
                             >
-                              <p className="leading-relaxed text-sm sm:text-base">{item.text}</p>
-                              <span
-                                className={`text-xs block text-left mt-2 ${
-  isDarkMode ? 'text-blue-200' : 'text-gray-500'
-}`}
-                              >
-                                {formatTimestamp(item.timestamp)}
-                              </span>
-                            </div>
+                              {formatDate(item.timestamp)}
+                            </span>
                           </div>
-                        ) : (
-                          <div className="flex justify-end">
-                            <div
-                              className={`p-3 sm:p-4 rounded-2xl shadow-md ${
-  containsTable ? 'w-full' : 'max-w-[90%]'
-} ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
-                            >
-                              <div className="flex justify-between items-center mb-2">
+                        )}
+                        <motion.div
+                          variants={itemVariants}
+                          initial="hidden"
+                          animate="visible"
+                          className="transition-all duration-200"
+                        >
+                          {item.type === 'question' ? (
+                            <div className="flex justify-start">
+                              <div
+                                className={`max-w-[90%] p-3 sm:p-4 rounded-2xl shadow-md ${
+    isDarkMode ? 'bg-[#2481CC] text-white' : 'bg-[#DCF8C6] text-gray-900'
+  }`}
+                              >
+                                <p className="leading-relaxed text-sm sm:text-base">{item.text}</p>
                                 <span
-                                  className={`text-sm font-semibold ${
-  isDarkMode ? 'text-blue-300' : 'text-blue-600'
-}`}
-                                >
-                                  خان
-                                </span>
-                                <span
-                                  className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                                  className={`text-xs block text-left mt-2 ${
+    isDarkMode ? 'text-blue-200' : 'text-gray-500'
+  }`}
                                 >
                                   {formatTimestamp(item.timestamp)}
                                 </span>
                               </div>
-                              <div className="leading-relaxed text-sm sm:text-base">
-                                {renderHTMLContent(item.answer)}
-                              </div>
-                              {item.sources && item.sources.length > 0 && (
-                                <div className="mt-3">
-                                  <h3
-                                    className={`text-sm font-semibold ${
-  isDarkMode ? 'text-gray-300' : 'text-gray-700'
-} mb-2`}
-                                  >
-                                    منابع:
-                                  </h3>
-                                  <ul className="list-disc pl-5 space-y-2">
-                                    {item.sources.map((source, sourceIndex) => (
-                                      <li key={sourceIndex} className="text-sm">
-                                        <p className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>
-                                          {source.text}
-                                        </p>
-                                        <a
-                                          href={source.metadata.url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-blue-500 hover:underline"
-                                        >
-                                          منبع: {source.metadata.source}
-                                        </a>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                              {isLastAnswer && activeWebsockets[item.id] && item.isStreaming && (
-                                <motion.div
-                                  variants={typingVariants}
-                                  initial="initial"
-                                  animate="animate"
-                                  className="flex items-center space-x-2 mt-2"
-                                >
-                                  <div className="flex space-x-1">
-                                    <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"></div>
-                                    <div
-                                      className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"
-                                      style={{ animationDelay: '0.2s' }}
-                                    ></div>
-                                    <div
-                                      className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"
-                                      style={{ animationDelay: '0.4s' }}
-                                    ></div>
-                                  </div>
-                                </motion.div>
-                              )}
                             </div>
-                          </div>
-                        )}
-                      </motion.div>
-                    </div>
-                  );
-                })}
+                          ) : (
+                            <div className="flex justify-end">
+                              <div
+                                className={`p-3 sm:p-4 rounded-2xl shadow-md ${
+    containsTable ? 'w-full' : 'max-w-[90%]'
+  } ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
+                              >
+                                <div className="flex justify-between items-center mb-2">
+                                  <span
+                                    className={`text-sm font-semibold ${
+    isDarkMode ? 'text-blue-300' : 'text-blue-600'
+  }`}
+                                  >
+                                    خان
+                                  </span>
+                                  <span
+                                    className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                                  >
+                                    {formatTimestamp(item.timestamp)}
+                                  </span>
+                                </div>
+                                <div className="leading-relaxed text-sm sm:text-base">
+                                  {renderHTMLContent(item.answer)}
+                                </div>
+                                {item.sources && item.sources.length > 0 && (
+                                  <div className="mt-3">
+                                    <h3
+                                      className={`text-sm font-semibold ${
+    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+  } mb-2`}
+                                    >
+                                      منابع:
+                                    </h3>
+                                    <ul className="list-disc pl-5 space-y-2">
+                                      {item.sources.map((source, sourceIndex) => (
+                                        <li key={sourceIndex} className="text-sm">
+                                          <p className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>
+                                            {source.text}
+                                          </p>
+                                          <a
+                                            href={source.metadata.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-500 hover:underline"
+                                          >
+                                            منبع: {source.metadata.source}
+                                          </a>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                                {isLastAnswer && activeWebsockets[item.id] && item.isStreaming && (
+                                  <motion.div
+                                    variants={typingVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    className="flex items-center space-x-2 mt-2"
+                                  >
+                                    <div className="flex space-x-1">
+                                      <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"></div>
+                                      <div
+                                        className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"
+                                        style={{ animationDelay: '0.2s' }}
+                                      ></div>
+                                      <div
+                                        className="w-1 h-1 bg-blue-500 rounded-full animate-bounce"
+                                        style={{ animationDelay: '0.4s' }}
+                                      ></div>
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </motion.div>
+                      </div>
+                    );
+                  })}
               </>
             )}
             <div ref={chatEndRef} />
