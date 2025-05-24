@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import NetworkBackground3D from './page/NetworkBackground3D';
 import ChatButton from './page/ChatButton';
 
+// Theme Context
 const ThemeContext = createContext();
 
 const ThemeProvider = ({ children }) => {
@@ -44,29 +46,33 @@ export const useTheme = () => {
     return context;
 };
 
+// Main App Component
 const App = () => {
     const { isDark, toggleTheme } = useTheme();
 
     return (
         <Router>
-            <div className="relative w-full h-screen bg-white dark:bg-[#121212] transition-colors duration-300 text-black dark:text-white overflow-hidden">
-                <div className="absolute top-4 right-4">
-                    <button
-                        onClick={toggleTheme}
-                        className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                    >
-                        {isDark ? '🌞' : '🌙'}
-                    </button>
+            <div className="relative w-full h-screen bg-transparent transition-colors duration-300 text-black dark:text-white overflow-hidden">
+                <NetworkBackground3D />
+                <div className="relative z-10">
+                    <div className="absolute top-4 right-4">
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                        >
+                            {isDark ? '🌞' : '🌙'}
+                        </button>
+                    </div>
+                    <Routes>
+                        <Route path="/" element={<ChatButton />} />
+                    </Routes>
                 </div>
-
-                <Routes>
-                    <Route path="/" element={<ChatButton />} />
-                </Routes>
             </div>
         </Router>
     );
 };
 
+// Wrapped App
 const WrappedApp = () => (
     <ThemeProvider>
         <App />

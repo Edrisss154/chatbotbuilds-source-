@@ -44,6 +44,7 @@
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.83.1",
     "simplebar-react": "^3.3.0",
+    "simplex-noise": "^4.0.3",
     "sortablejs": "^1.15.6",
     "three": "^0.175.0",
     "toast": "^0.5.4",
