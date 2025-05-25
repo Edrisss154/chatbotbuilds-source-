@@ -44,6 +44,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
   });
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [activeWebsockets, setActiveWebsockets] = useState({});
+  const [copiedMessageId, setCopiedMessageId] = useState(null); // Track which message was copied
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -59,7 +60,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     const handleScroll = () => {
       if (chatContainerRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
-        const isBottom = scrollHeight - scrollTop - clientHeight < 10; // Within 10px of bottom
+        const isBottom = scrollHeight - scrollTop - clientHeight < 10;
         setIsAtBottom(isBottom);
       }
     };
@@ -67,7 +68,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     const chatContainer = chatContainerRef.current;
     if (chatContainer) {
       chatContainer.addEventListener('scroll', handleScroll);
-      handleScroll(); // Initial check
+      handleScroll();
     }
 
     return () => {
@@ -138,6 +139,19 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
       }
     }
+  };
+
+  const copyToClipboard = (text, messageId) => {
+    navigator.clipboard.writeText(text).then(
+        () => {
+          setCopiedMessageId(messageId);
+          setTimeout(() => setCopiedMessageId(null), 3000); // Revert to copy icon after 3 seconds
+        },
+        (err) => {
+          console.error('خطا در کپی کردن متن:', err);
+          setError('خطا در کپی کردن متن');
+        }
+    );
   };
 
   const handleSubmit = async (e, suggestion = null) => {
@@ -243,6 +257,17 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
       finalizeResponse(answerId, wsData.answerBuffer || '');
     }
   };
+
+  // Commented out for future phases
+  /*
+  const handleRegenerate = (answerId) => {
+    const answerIndex = chatHistory.findIndex((item) => item.id === answerId);
+    if (answerIndex > 0 && chatHistory[answerIndex - 1].type === 'question') {
+      const questionText = chatHistory[answerIndex - 1].text;
+      handleSubmit({ preventDefault: () => {} }, questionText);
+    }
+  };
+  */
 
   const finalizeResponse = (answerId, answerBuffer, data = null, errorMessage = null) => {
     setChatHistory((prev) => {
@@ -410,18 +435,13 @@ a:hover {
   color: #104E8B;
 }
 
-/* استایل‌های مخصوص موبایل */
 @media (max-width: 400px) {
   table {
-    min-width: 100%; 
+    min-width: 100%;
     display: block;
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
-  }
-
-  table::-webkit-scrollbar {
-    //display: none; 
   }
 }
 </style>
@@ -477,9 +497,25 @@ a:hover {
                   onClick={onClose}
                   className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                </svg>
+                {isDarkMode ? (
+                    <svg
+                        className="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                ) : (
+                    <svg
+                        className="w-5 h-5 text-gray-900"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                )}
               </button>
               <h2 className="text-lg sm:text-xl font-bold">چت با خان</h2>
             </div>
@@ -487,18 +523,41 @@ a:hover {
                 onClick={() => setShowSettingsModal(true)}
                 className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"
-                />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+              {isDarkMode ? (
+                  <svg
+                      className="w-5 h-5 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                  >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"
+                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+              ) : (
+                  <svg
+                      className="w-5 h-5 text-gray-900"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                  >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"
+                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+              )}
             </button>
           </div>
-
           <SettingsModal
               showSettingsModal={showSettingsModal}
               setShowSettingsModal={setShowSettingsModal}
@@ -523,7 +582,7 @@ a:hover {
                     >
                       سوال خود را بپرسید تا گفتگو شروع شود
                     </div>
-                    <SuggestedQuestions onSubmit={handleSubmit} isDarkMode={isDarkMode} />
+                    <SuggestedQuestions onSubmit={handleSubmit} isDarkMode={isDarkMode}/>
                   </div>
               ) : (
                   <>
@@ -560,85 +619,164 @@ a:hover {
                                 className="transition-all duration-200"
                             >
                               {item.type === 'question' ? (
-                                  <div className="flex justify-start">
-                                    <div
-                                        className={`max-w-[90%] p-3 sm:p-4 rounded-2xl shadow-md ${
-                                            isDarkMode ? 'bg-[#2481CC] text-white' : 'bg-[#DCF8C6] text-gray-900'
-                                        }`}
-                                    >
-                                      <p className="leading-relaxed text-sm sm:text-base">{item.text}</p>
-                                      <span
-                                          className={`text-xs block text-left mt-2 ${
-                                              isDarkMode ? 'text-blue-200' : 'text-gray-500'
+                                  <>
+                                    <div className="flex justify-start">
+                                      <div
+                                          className={`max-w-[90%] p-3 sm:p-4 rounded-2xl shadow-md ${
+                                              isDarkMode ? 'bg-[#2481CC] text-white' : 'bg-[#DCF8C6] text-gray-900'
                                           }`}
                                       >
-                                {formatTimestamp(item.timestamp)}
-                              </span>
-                                    </div>
-                                  </div>
-                              ) : (
-                                  <div className="flex justify-end">
-                                    <div
-                                        className={`p-3 sm:p-4 rounded-2xl shadow-md ${
-                                            containsTable ? 'w-full' : 'max-w-[90%]'
-                                        } ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
-                                    >
-                                      <div className="flex justify-between items-center mb-2">
-                                <span
-                                    className={`text-sm font-semibold ${
-                                        isDarkMode ? 'text-blue-300' : 'text-blue-600'
-                                    }`}
-                                >
-                                  خان
-                                </span>
+                                        <p className="leading-relaxed text-sm sm:text-base">{item.text}</p>
                                         <span
-                                            className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                                            className={`text-xs block text-left mt-2 ${
+                                                isDarkMode ? 'text-blue-200' : 'text-gray-500'
+                                            }`}
                                         >
                                   {formatTimestamp(item.timestamp)}
                                 </span>
                                       </div>
-                                      <div className="leading-relaxed text-sm sm:text-base">
-                                        {renderHTMLContent(item.answer)}
-                                      </div>
-                                      {item.sources && item.sources.length > 0 && (
-                                          <div className="mt-3">
-                                            <h3
-                                                className={`text-sm font-semibold ${
-                                                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                                                } mb-2`}
-                                            >
-                                              منابع:
-                                            </h3>
-                                            <ul className="list-disc pl-5 space-y-2">
-                                              {item.sources.map((source, sourceIndex) => (
-                                                  <li key={sourceIndex} className="text-sm">
-                                                    <p className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>
-                                                      {source.text}
-                                                    </p>
-                                                    <a
-                                                        href={source.metadata.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-blue-500 hover:underline"
-                                                    >
-                                                      منبع: {source.metadata.source}
-                                                    </a>
-                                                  </li>
-                                              ))}
-                                            </ul>
-                                          </div>
-                                      )}
                                     </div>
-                                  </div>
+                                    <div className="flex justify-start mt-2">
+                                      <button
+                                          onClick={() => copyToClipboard(item.text, item.id)}
+                                          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                          title="کپی متن"
+                                          aria-label="کپی متن سوال"
+                                      >
+                                        {copiedMessageId === item.id ? (
+                                            <svg
+                                                className="w-4 h-4 text-green-500"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                              <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth="2"
+                                                  d="M5 13l4 4L19 7"
+                                              />
+                                            </svg>
+                                        ) : (
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                              <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth="2"
+                                                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                              />
+                                            </svg>
+                                        )}
+                                      </button>
+                                    </div>
+                                  </>
+                              ) : (
+                                  <>
+                                    <div className="flex justify-end">
+                                      <div
+                                          className={`p-3 sm:p-4 rounded-2xl shadow-md ${
+                                              containsTable ? 'w-full' : 'max-w-[90%]'
+                                          } ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
+                                      >
+                                        <div className="flex justify-between items-center mb-2">
+                                  <span
+                                      className={`text-sm font-semibold ${
+                                          isDarkMode ? 'text-blue-300' : 'text-blue-600'
+                                      }`}
+                                  >
+                                    خان
+                                  </span>
+                                          <span
+                                              className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+                                          >
+                                    {formatTimestamp(item.timestamp)}
+                                  </span>
+                                        </div>
+                                        <div className="leading-relaxed text-sm sm:text-base">
+                                          {renderHTMLContent(item.answer)}
+                                        </div>
+                                        {item.sources && item.sources.length > 0 && (
+                                            <div className="mt-3">
+                                              <h3
+                                                  className={`text-sm font-semibold ${
+                                                      isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                                  } mb-2`}
+                                              >
+                                                منابع:
+                                              </h3>
+                                              <ul className="list-disc pl-5 space-y-2">
+                                                {item.sources.map((source, sourceIndex) => (
+                                                    <li key={sourceIndex} className="text-sm">
+                                                      <p className={isDarkMode ? 'text-gray-300' : 'text-gray-800'}>
+                                                        {source.text}
+                                                      </p>
+                                                      <a
+                                                          href={source.metadata.url}
+                                                          target="_blank"
+                                                          rel="noopener noreferrer"
+                                                          className="text-blue-500 hover:underline"
+                                                      >
+                                                        منبع: {source.metadata.source}
+                                                      </a>
+                                                    </li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="flex justify-end mt-2">
+                                      <button
+                                          onClick={() => copyToClipboard(item.answer, item.id)}
+                                          className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                                          title="کپی پاسخ"
+                                          aria-label="کپی متن پاسخ"
+                                      >
+                                        {copiedMessageId === item.id ? (
+                                            <svg
+                                                className="w-4 h-4 text-green-500"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                              <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth="2"
+                                                  d="M5 13l4 4L19 7"
+                                              />
+                                            </svg>
+                                        ) : (
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                              <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth="2"
+                                                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                              />
+                                            </svg>
+                                        )}
+                                      </button>
+                                    </div>
+                                  </>
                               )}
                             </motion.div>
                           </div>
                       );
                     })}
-                    <div ref={chatEndRef} />
+                    <div ref={chatEndRef}/>
                   </>
               )}
-              {/* Scroll Button */}
               {showScrollButtonByUser && (
                   <button
                       onClick={handleScrollButtonClick}
@@ -650,8 +788,8 @@ a:hover {
                       style={{
                         backdropFilter: 'blur(8px)',
                         WebkitBackdropFilter: 'blur(8px)',
-                        width: '2.25rem',
-                        height: '2.25rem',
+                        width: '2rem',
+                        height: '2rem',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -663,7 +801,8 @@ a:hover {
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
                     </svg>
                   </button>
               )}
@@ -685,7 +824,7 @@ a:hover {
                 }`}
             >
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
               </svg>
             </button>
 
