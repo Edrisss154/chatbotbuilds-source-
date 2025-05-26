@@ -92,15 +92,12 @@ body {
 
 #welcome-message-container {
   position: fixed;
-  bottom: 90px; /* فاصله از دکمه چت برای قرارگیری بالای آن */
-  right: 1.5rem; /* هم‌تراز با دکمه چت */
+  bottom: 90px;
+  right: 1.5rem;
   z-index: 1001;
   display: flex;
   justify-content: flex-end;
 }
-
-
-
 
 @keyframes fadeInUp {
   from {
