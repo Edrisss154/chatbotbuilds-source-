@@ -112,73 +112,73 @@ const Login = () => {
                             )}
                         </div>
                     )}
-                    <form>
-                        {!isLoginMode && (
-                            <div className="mb-4">
-                                <label
-                                    className="block text-sm mb-2 text-black dark:text-white"
-                                    htmlFor="username"
-                                >
-                                    نام کاربری
-                                </label>
-                                <input
-                                    type="text"
-                                    id="username"
-                                    className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"
-                                    placeholder="نام کاربری خود را وارد کنید"
-                                    required
-                                />
-                            </div>
-                        )}
-                        <div className="mb-4">
-                            <label
-                                className="block text-sm mb-2 text-black dark:text-white"
-                                htmlFor="email"
-                            >
-                                ایمیل
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"
-                                placeholder="ایمیل خود را وارد کنید"
-                                required
-                            />
-                        </div>
-                        <div className="mb-6">
-                            <label
-                                className="block text-sm mb-2 text-black dark:text-white"
-                                htmlFor="password"
-                            >
-                                رمز عبور
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"
-                                placeholder="رمز عبور خود را وارد کنید"
-                                required
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                        >
-                            {isLoginMode ? 'ورود' : 'ثبت‌نام'}
-                        </button>
-                    </form>
+                    {/*<form>*/}
+                    {/*    {!isLoginMode && (*/}
+                    {/*        <div className="mb-4">*/}
+                    {/*            <label*/}
+                    {/*                className="block text-sm mb-2 text-black dark:text-white"*/}
+                    {/*                htmlFor="username"*/}
+                    {/*            >*/}
+                    {/*                نام کاربری*/}
+                    {/*            </label>*/}
+                    {/*            <input*/}
+                    {/*                type="text"*/}
+                    {/*                id="username"*/}
+                    {/*                className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"*/}
+                    {/*                placeholder="نام کاربری خود را وارد کنید"*/}
+                    {/*                required*/}
+                    {/*            />*/}
+                    {/*        </div>*/}
+                    {/*    )}*/}
+                    {/*    <div className="mb-4">*/}
+                    {/*        <label*/}
+                    {/*            className="block text-sm mb-2 text-black dark:text-white"*/}
+                    {/*            htmlFor="email"*/}
+                    {/*        >*/}
+                    {/*            ایمیل*/}
+                    {/*        </label>*/}
+                    {/*        <input*/}
+                    {/*            type="email"*/}
+                    {/*            id="email"*/}
+                    {/*            className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"*/}
+                    {/*            placeholder="ایمیل خود را وارد کنید"*/}
+                    {/*            required*/}
+                    {/*        />*/}
+                    {/*    </div>*/}
+                    {/*    <div className="mb-6">*/}
+                    {/*        <label*/}
+                    {/*            className="block text-sm mb-2 text-black dark:text-white"*/}
+                    {/*            htmlFor="password"*/}
+                    {/*        >*/}
+                    {/*            رمز عبور*/}
+                    {/*        </label>*/}
+                    {/*        <input*/}
+                    {/*            type="password"*/}
+                    {/*            id="password"*/}
+                    {/*            className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"*/}
+                    {/*            placeholder="رمز عبور خود را وارد کنید"*/}
+                    {/*            required*/}
+                    {/*        />*/}
+                    {/*    </div>*/}
+                    {/*    <button*/}
+                    {/*        type="submit"*/}
+                    {/*        className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"*/}
+                    {/*    >*/}
+                    {/*        {isLoginMode ? 'ورود' : 'ثبت‌نام'}*/}
+                    {/*    </button>*/}
+                    {/*</form>*/}
                     <div className="mt-6 flex justify-center">
                         <div id="googleSignInButton" className="w-full max-w-[400px]"></div>
                     </div>
-                    <p className="text-sm mt-4 text-center text-black dark:text-white">
-                        {isLoginMode ? 'حساب کاربری ندارید؟' : 'قبلاً ثبت‌نام کردید؟'}{' '}
-                        <button
-                            onClick={toggleMode}
-                            className="text-blue-400 hover:underline focus:outline-none"
-                        >
-                            {isLoginMode ? 'ثبت‌نام' : 'ورود'}
-                        </button>
-                    </p>
+                    {/*<p className="text-sm mt-4 text-center text-black dark:text-white">*/}
+                    {/*    {isLoginMode ? 'حساب کاربری ندارید؟' : 'قبلاً ثبت‌نام کردید؟'}{' '}*/}
+                    {/*    <button*/}
+                    {/*        onClick={toggleMode}*/}
+                    {/*        className="text-blue-400 hover:underline focus:outline-none"*/}
+                    {/*    >*/}
+                    {/*        {isLoginMode ? 'ثبت‌نام' : 'ورود'}*/}
+                    {/*    </button>*/}
+                    {/*</p>*/}
                     <p className="text-sm mt-2 text-center text-black dark:text-white">
                         <Link to="/" className="text-blue-400 hover:underline">
                             بازگشت به خانه

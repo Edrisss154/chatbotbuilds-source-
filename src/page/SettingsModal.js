@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../page/AuthContext'; // مسیر AuthContext را تنظیم کنید
 
 const settingsModalVariants = {
     hidden: { opacity: 0, scale: 0.8 },
@@ -15,15 +16,15 @@ const SettingsModal = ({
                            showScrollButtonByUser,
                            setShowScrollButtonByUser,
                        }) => {
+    const { user } = useAuth(); // دسترسی به user از AuthContext
+
     const handleOpenNewTab = () => {
         window.open('http://chat.satia.co/', '_blank');
         setShowSettingsModal(false);
     };
 
     const handleReset = () => {
-        // پاک کردن تمام داده‌های localStorage
         localStorage.clear();
-        // رفرش کردن صفحه
         window.location.reload();
     };
 
@@ -68,6 +69,23 @@ const SettingsModal = ({
                                 </svg>
                             </button>
                         </div>
+
+                        {/* نمایش اطلاعات کاربر */}
+                        {user && (
+                            <div className="mb-4">
+                                <h4 className="text-sm font-semibold mb-2">حساب کاربری</h4>
+                                <div className="flex items-center space-x-4">
+
+                                    <div>
+                                        <p className="text-sm font-medium">{user.name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="mb-4">
                             <h4 className="text-sm font-semibold mb-2">تم</h4>
                             <div className="flex space-x-4">
