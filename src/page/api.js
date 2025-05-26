@@ -1,6 +1,6 @@
 
 export const askQuestion = (question, sessionId, onMessage, onError, onClose) => {
-  const PYTHON_CHAT_DATA_SOURCE = `ws://192.168.171.6:8000/ws/ask?session_id=${sessionId}`;
+  const PYTHON_CHAT_DATA_SOURCE = `ws://144.76.160.218:8000/ws/ask?session_id=${sessionId}`;
   console.log('Connecting to WebSocket:', PYTHON_CHAT_DATA_SOURCE);
   const ws = new WebSocket(PYTHON_CHAT_DATA_SOURCE);
 
@@ -36,7 +36,7 @@ export const askQuestion = (question, sessionId, onMessage, onError, onClose) =>
 export const fetchChatHistory = async (sessionId, offset = 0, limit = 10) => {
   try {
     const response = await fetch(
-        `http://192.168.171.6:8000/chat/history/${sessionId}?offset=${offset}&limit=${limit}`
+        `http://144.76.160.218:8000/chat/history/${sessionId}?offset=${offset}&limit=${limit}`
     );
     if (!response.ok) {
       throw new Error('خطا در دریافت تاریخچه چت');
@@ -51,7 +51,7 @@ export const fetchChatHistory = async (sessionId, offset = 0, limit = 10) => {
 
 export const fetchWizards = async () => {
   try {
-    const response = await fetch('http://192.168.171.6:8000/wizards');
+    const response = await fetch('http://144.76.160.218:8000/wizards');
     if (!response.ok) {
       throw new Error('خطا در دریافت لیست ویزارد‌ها');
     }
