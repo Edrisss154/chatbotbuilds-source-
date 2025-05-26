@@ -5,7 +5,7 @@ import SettingsModal from './SettingsModal';
 import SuggestedQuestions from './SuggestedQuestions';
 import parse, { domToReact } from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
-import { useTheme } from '../App';
+import { useTheme } from '../ThemeContext';
 
 const modalVariants = {
   hidden: { opacity: 0, y: 50 },
