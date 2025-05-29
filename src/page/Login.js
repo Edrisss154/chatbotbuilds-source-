@@ -71,6 +71,24 @@ const Login = () => {
         navigate('/');
     };
 
+    const handleGuestLogin = () => {
+        // Generate a random session ID for guest
+        const guestSessionId = 'guest_' + Math.random().toString(36).substring(2, 15);
+        setSessionId(guestSessionId);
+        localStorage.setItem('sessionId', guestSessionId);
+        
+        // Set guest user info
+        const guestUserInfo = {
+            name: 'کاربر مهمان',
+            email: 'guest',
+            isGuest: true
+        };
+        setUser(guestUserInfo);
+        login(guestUserInfo);
+        
+        navigate('/');
+    };
+
     const sendToBackend = async (token) => {
         try {
             const res = await fetch('/api/auth/google', {
@@ -102,83 +120,33 @@ const Login = () => {
                             <h3 className="text-lg text-black dark:text-white">
                                 خوش آمدید، {user.name}!
                             </h3>
-                            <p className="text-sm text-black dark:text-white">ایمیل: {user.email}</p>
-                            {user.picture && (
-                                <img
-                                    src={user.picture}
-                                    alt="پروفایل"
-                                    className="mt-2 rounded-full w-16 h-16 mx-auto"
-                                />
+                            {!user.isGuest && (
+                                <>
+                                    <p className="text-sm text-black dark:text-white">ایمیل: {user.email}</p>
+                                    {user.picture && (
+                                        <img
+                                            src={user.picture}
+                                            alt="پروفایل"
+                                            className="mt-2 rounded-full w-16 h-16 mx-auto"
+                                        />
+                                    )}
+                                </>
                             )}
                         </div>
                     )}
-                    {/*<form>*/}
-                    {/*    {!isLoginMode && (*/}
-                    {/*        <div className="mb-4">*/}
-                    {/*            <label*/}
-                    {/*                className="block text-sm mb-2 text-black dark:text-white"*/}
-                    {/*                htmlFor="username"*/}
-                    {/*            >*/}
-                    {/*                نام کاربری*/}
-                    {/*            </label>*/}
-                    {/*            <input*/}
-                    {/*                type="text"*/}
-                    {/*                id="username"*/}
-                    {/*                className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"*/}
-                    {/*                placeholder="نام کاربری خود را وارد کنید"*/}
-                    {/*                required*/}
-                    {/*            />*/}
-                    {/*        </div>*/}
-                    {/*    )}*/}
-                    {/*    <div className="mb-4">*/}
-                    {/*        <label*/}
-                    {/*            className="block text-sm mb-2 text-black dark:text-white"*/}
-                    {/*            htmlFor="email"*/}
-                    {/*        >*/}
-                    {/*            ایمیل*/}
-                    {/*        </label>*/}
-                    {/*        <input*/}
-                    {/*            type="email"*/}
-                    {/*            id="email"*/}
-                    {/*            className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"*/}
-                    {/*            placeholder="ایمیل خود را وارد کنید"*/}
-                    {/*            required*/}
-                    {/*        />*/}
-                    {/*    </div>*/}
-                    {/*    <div className="mb-6">*/}
-                    {/*        <label*/}
-                    {/*            className="block text-sm mb-2 text-black dark:text-white"*/}
-                    {/*            htmlFor="password"*/}
-                    {/*        >*/}
-                    {/*            رمز عبور*/}
-                    {/*        </label>*/}
-                    {/*        <input*/}
-                    {/*            type="password"*/}
-                    {/*            id="password"*/}
-                    {/*            className="w-full p-3 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500"*/}
-                    {/*            placeholder="رمز عبور خود را وارد کنید"*/}
-                    {/*            required*/}
-                    {/*        />*/}
-                    {/*    </div>*/}
-                    {/*    <button*/}
-                    {/*        type="submit"*/}
-                    {/*        className="w-full p-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"*/}
-                    {/*    >*/}
-                    {/*        {isLoginMode ? 'ورود' : 'ثبت‌نام'}*/}
-                    {/*    </button>*/}
-                    {/*</form>*/}
-                    <div className="mt-6 flex justify-center">
+                    <div className="mt-6 flex flex-col items-center gap-4">
                         <div id="googleSignInButton" className="w-full max-w-[400px]"></div>
+                        <button
+                            onClick={handleGuestLogin}
+                            className={`w-full max-w-[400px] p-3 rounded-lg border-2 transition-colors ${
+                                isDark 
+                                    ? 'border-gray-600 text-white hover:bg-gray-700' 
+                                    : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                            }`}
+                        >
+                            ورود به عنوان مهمان
+                        </button>
                     </div>
-                    {/*<p className="text-sm mt-4 text-center text-black dark:text-white">*/}
-                    {/*    {isLoginMode ? 'حساب کاربری ندارید؟' : 'قبلاً ثبت‌نام کردید؟'}{' '}*/}
-                    {/*    <button*/}
-                    {/*        onClick={toggleMode}*/}
-                    {/*        className="text-blue-400 hover:underline focus:outline-none"*/}
-                    {/*    >*/}
-                    {/*        {isLoginMode ? 'ثبت‌نام' : 'ورود'}*/}
-                    {/*    </button>*/}
-                    {/*</p>*/}
                     <p className="text-sm mt-2 text-center text-black dark:text-white">
                         <Link to="/" className="text-blue-400 hover:underline">
                             بازگشت به خانه

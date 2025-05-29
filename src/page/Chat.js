@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { askQuestion, fetchChatHistory } from './api';
+import { askQuestion, fetchChatHistory, fetchWizards } from './api';
 import SettingsModal from './SettingsModal';
-import SuggestedQuestions from './SuggestedQuestions';
 import parse, { domToReact } from 'html-react-parser';
 import { v4 as uuidv4 } from 'uuid';
 import { useTheme } from '../ThemeContext';
+import WizardButtons from './Wizard/WizardButtons';
 
 const modalVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -44,7 +44,9 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
   });
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [activeWebsockets, setActiveWebsockets] = useState({});
-  const [copiedMessageId, setCopiedMessageId] = useState(null); // Track which message was copied
+  const [copiedMessageId, setCopiedMessageId] = useState(null);
+  const [currentWizards, setCurrentWizards] = useState([]);
+  const [rootWizards, setRootWizards] = useState([]);
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const chatContainerRef = useRef(null);
@@ -105,8 +107,11 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
         }
       }
     };
-    loadChatHistory();
-  }, [sessionId, setChatHistory]);
+    if (sessionId) {
+      loadChatHistory();
+      fetchRootWizards();
+    }
+  }, [sessionId]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -354,6 +359,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
   };
 
   const renderHTMLContent = (htmlContent) => {
+    console.log('Rendering HTML content:', htmlContent);
     if (typeof htmlContent !== 'string') {
       console.error('Invalid HTML content:', htmlContent);
       return <span>خطا در نمایش محتوا</span>;
@@ -367,85 +373,86 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     }
 
     const tableStyles = `
-<style>
-table {
-  width: 100%;
-  min-width: 100%;
-  border-collapse: collapse;
-  margin: 0;
-  font-size: 0.875rem;
-  direction: rtl;
-  border: 1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'};
-}
-
-th, td {
-  padding: 0.75rem;
-  text-align: center;
-  border: 1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'};
-}
-
-th {
-  background-color: ${isDarkMode ? '#374151' : '#F3F4F6'};
-  font-weight: 600;
-  color: ${isDarkMode ? '#D1D5DB' : '#374151'};
-}
-
-td {
-  background-color: ${isDarkMode ? '#1F2937' : '#FFFFFF'};
-  color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
-}
-
-tr:nth-child(even) td {
-  background-color: ${isDarkMode ? '#2D3748' : '#F9FAFB'};
-}
-
-h2, h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 1rem 0 0.5rem;
-  color: ${isDarkMode ? '#D1D5DB' : '#1F2937'};
-  text-align: right;
-}
-
-p {
-  margin: 0.5rem 0;
-  color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
-  text-align: right;
-}
-
-ul {
-  list-style-type: disc;
-  padding-right: 1.25rem;
-  margin: 0.5rem 0;
-}
-
-li {
-  margin-bottom: 0.25rem;
-  color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
-  text-align: right;
-}
-
-a {
-  font-weight: bold;
-  color: #1E90FF;
-  text-decoration: underline;
-}
-
-a:hover {
-  color: #104E8B;
-}
-
-@media (max-width: 400px) {
-  table {
-    min-width: 100%;
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-</style>
-`;
+    <style>
+    figure.table {
+      width: 100% !important;
+      margin: 0;
+      padding: 0;
+    }
+    table {
+      dir: ltr;
+      width: 100% !important;
+      min-width: 100% !important;
+      border-collapse: collapse;
+      margin: 0;
+      font-size: 0.875rem;
+      direction: rtl;
+      border: 1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'};
+    }
+    th, td {
+      padding: 0.75rem;
+      text-align: center;
+      border: 1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'};
+    }
+    th {
+      background-color: ${isDarkMode ? '#374151' : '#F3F4F6'};
+      font-weight: 600;
+      color: ${isDarkMode ? '#D1D5DB' : '#374151'};
+    }
+    td {
+      background-color: ${isDarkMode ? '#1F2937' : '#FFFFFF'};
+      color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
+    }
+    tr:nth-child(even) td {
+      background-color: ${isDarkMode ? '#2D3748' : '#F9FAFB'};
+    }
+    h2, h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 1rem 0 0.5rem;
+      color: ${isDarkMode ? '#D1D5DB' : '#1F2937'};
+      text-align: right;
+    }
+    p {
+      margin: 0.5rem 0;
+      color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
+      text-align: right;
+    }
+    ul {
+      list-style-type: disc;
+      padding-right: 1.25rem;
+      margin: 0.5rem 0;
+    }
+    li {
+      margin-bottom: 0.25rem;
+      color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
+      text-align: right;
+    }
+    a {
+      font-weight: bold;
+      color: #1E90FF;
+      text-decoration: underline;
+    }
+    a:hover {
+      color: #104E8B;
+    }
+    @media (max-width: 400px) {
+      figure.table {
+        width: 100% !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      table {
+        width: 100% !important;
+        min-width: 100% !important;
+        display: table;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+    </style>
+    `;
 
     try {
       return renderableParts.map((part, index) => (
@@ -462,6 +469,52 @@ a:hover {
     } catch (err) {
       console.error('Error parsing HTML:', err);
       return <span>خطا در نمایش محتوا</span>;
+    }
+  };
+
+  const fetchRootWizards = async () => {
+    try {
+      const data = await fetchWizards();
+      
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid response format: expected an array");
+      }
+
+      // Filter for root wizards (those without parent_id)
+      const rootWizards = data.filter(wizard => !wizard.parent_id);
+      setRootWizards(rootWizards);
+      setCurrentWizards(rootWizards);
+    } catch (err) {
+      console.error('Error fetching wizards:', err);
+      setError(err.message || 'خطا در دریافت ویزاردها');
+      setRootWizards([]);
+      setCurrentWizards([]);
+    }
+  };
+
+  const handleWizardSelect = (wizardData) => {
+    console.log('Wizard selected:', wizardData);
+    
+    // Process the wizard's context to ensure HTML is properly handled
+    const processedContext = wizardData.context ? wizardData.context : '';
+    
+    // Add the wizard's context as an answer to the chat history
+    setChatHistory((prev) => [
+      ...prev,
+      {
+        type: 'answer',
+        answer: processedContext,
+        timestamp: new Date(),
+        id: uuidv4(),
+        isStreaming: false, // Set to false since this is a complete response
+      },
+    ]);
+
+    // Update currentWizards based on whether the wizard has children
+    if (wizardData.children && wizardData.children.length > 0) {
+      setCurrentWizards(wizardData.children);
+    } else {
+      setCurrentWizards(rootWizards); // Reset to root wizards if no children
     }
   };
 
@@ -582,7 +635,6 @@ a:hover {
                     >
                       سوال خود را بپرسید تا گفتگو شروع شود
                     </div>
-                    <SuggestedQuestions onSubmit={handleSubmit} isDarkMode={isDarkMode}/>
                   </div>
               ) : (
                   <>
@@ -810,50 +862,53 @@ a:hover {
           </div>
 
           <div
-              className={`w-full max-w-3xl mx-auto flex items-center p-4 sm:p-5 border-t ${
+              className={`w-full max-w-3xl mx-auto flex flex-col p-4 sm:p-5 border-t ${
                   isDarkMode ? 'border-gray-800' : 'border-gray-200'
               } bg-opacity-80 backdrop-blur-sm sticky bottom-0`}
           >
-            <button
-                onClick={handleSubmit}
-                disabled={!question.trim()}
-                className={`p-2 rounded-full ${
-                    !question.trim()
-                        ? 'opacity-50 cursor-not-allowed'
-                        : 'hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors text-blue-500 dark:text-blue-400'
-                }`}
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-              </svg>
-            </button>
+            <WizardButtons wizards={currentWizards} onWizardSelect={handleWizardSelect} />
+            <div className="flex items-center mt-6">
+              <button
+                  onClick={handleSubmit}
+                  disabled={!question.trim()}
+                  className={`p-2 rounded-full ${
+                      !question.trim()
+                          ? 'opacity-50 cursor-not-allowed'
+                          : 'hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors text-blue-500 dark:text-blue-400'
+                  }`}
+              >
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+              </button>
 
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-            />
-            <textarea
-                ref={textareaRef}
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="سوال خود را بپرسید..."
-                className={`flex-1 p-3 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base resize-none no-scrollbar ${
-                    isDarkMode
-                        ? 'bg-gray-800 text-white placeholder-gray-400'
-                        : 'bg-white text-gray-900 placeholder-gray-400 border border-gray-300'
-                } transition-all duration-200 shadow-sm`}
-                style={{
-                  minHeight: '40px',
-                  maxHeight: '120px',
-                  lineHeight: '1.5',
-                  overflowY: 'auto',
-                  WebkitOverflowScrolling: 'touch',
-                }}
-                rows={1}
-            />
+              <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="hidden"
+              />
+              <textarea
+                  ref={textareaRef}
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  placeholder="سوال خود را بپرسید..."
+                  className={`flex-1 p-3 sm:p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base resize-none no-scrollbar ${
+                      isDarkMode
+                          ? 'bg-gray-800 text-white placeholder-gray-400'
+                          : 'bg-white text-gray-900 placeholder-gray-400 border border-gray-300'
+                  } transition-all duration-200 shadow-sm`}
+                  style={{
+                    minHeight: '40px',
+                    maxHeight: '120px',
+                    lineHeight: '1.5',
+                    overflowY: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                  }}
+                  rows={1}
+              />
+            </div>
           </div>
 
           {selectedFile && (
