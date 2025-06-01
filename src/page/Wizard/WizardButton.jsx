@@ -5,7 +5,7 @@ const WizardButton = ({ wizard, onWizardClick }) => {
 
     const handleWizardClick = async (wizardId) => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_PYTHON_APP_API_URL}/wizards/${wizardId}?enable_only=true`);
+          const response = await fetch(`${process.env.REACT_APP_PYTHON_APP_API_URL}/wizards/${wizardId}`);
           if (!response.ok) {
             throw new Error('خطا در دریافت محتوای ویزارد');
           }
