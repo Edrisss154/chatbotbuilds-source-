@@ -136,6 +136,29 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     }
   }, [question]);
 
+  useEffect(() => {
+    // Apply target="_blank" and styling to links after rendering
+    const applyLinkAttributes = () => {
+      const chatLinks = document.querySelectorAll('.chat-message a');
+      console.log('Found chat links:', chatLinks.length);
+      chatLinks.forEach((link) => {
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+        link.style.color = isDarkMode ? '#60a5fa' : '#2563eb';
+        link.style.textDecoration = 'underline';
+      });
+    };
+
+    // Run immediately and observe DOM changes
+    applyLinkAttributes();
+    const observer = new MutationObserver(applyLinkAttributes);
+    if (chatContainerRef.current) {
+      observer.observe(chatContainerRef.current, { childList: true, subtree: true });
+    }
+
+    return () => observer.disconnect();
+  }, [chatHistory, isDarkMode]);
+
   const handleScrollButtonClick = () => {
     if (chatContainerRef.current) {
       if (isAtBottom) {
@@ -150,7 +173,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     navigator.clipboard.writeText(text).then(
         () => {
           setCopiedMessageId(messageId);
-          setTimeout(() => setCopiedMessageId(null), 3000); // Revert to copy icon after 3 seconds
+          setTimeout(() => setCopiedMessageId(null), 3000);
         },
         (err) => {
           console.error('خطا در کپی کردن متن:', err);
@@ -263,17 +286,6 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     }
   };
 
-  // Commented out for future phases
-  /*
-  const handleRegenerate = (answerId) => {
-    const answerIndex = chatHistory.findIndex((item) => item.id === answerId);
-    if (answerIndex > 0 && chatHistory[answerIndex - 1].type === 'question') {
-      const questionText = chatHistory[answerIndex - 1].text;
-      handleSubmit({ preventDefault: () => {} }, questionText);
-    }
-  };
-  */
-
   const finalizeResponse = (answerId, answerBuffer, data = null, errorMessage = null) => {
     setChatHistory((prev) => {
       const updatedHistory = [...prev];
@@ -373,95 +385,109 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
     }
 
     const tableStyles = `
-    <style>
-    figure.table {
-      width: 100% !important;
-      margin: 0;
-      padding: 0;
-    }
-    table {
-      dir: ltr;
-      width: 100% !important;
-      min-width: 100% !important;
-      border-collapse: collapse;
-      margin: 0;
-      font-size: 0.875rem;
-      direction: rtl;
-      border: 1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'};
-    }
-    th, td {
-      padding: 0.75rem;
-      text-align: center;
-      border: 1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'};
-    }
-    th {
-      background-color: ${isDarkMode ? '#374151' : '#F3F4F6'};
-      font-weight: 600;
-      color: ${isDarkMode ? '#D1D5DB' : '#374151'};
-    }
-    td {
-      background-color: ${isDarkMode ? '#1F2937' : '#FFFFFF'};
-      color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
-    }
-    tr:nth-child(even) td {
-      background-color: ${isDarkMode ? '#2D3748' : '#F9FAFB'};
-    }
-    h2, h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 1rem 0 0.5rem;
-      color: ${isDarkMode ? '#D1D5DB' : '#1F2937'};
-      text-align: right;
-    }
-    p {
-      margin: 0.5rem 0;
-      color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
-      text-align: right;
-    }
-    ul {
-      list-style-type: disc;
-      padding-right: 1.25rem;
-      margin: 0.5rem 0;
-    }
-    li {
-      margin-bottom: 0.25rem;
-      color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
-      text-align: right;
-    }
-    a {
-      font-weight: bold;
-      color: #1E90FF;
-      text-decoration: underline;
-    }
-    a:hover {
-      color: #104E8B;
-    }
-    @media (max-width: 400px) {
-      figure.table {
-        width: 100% !important;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-      table {
-        width: 100% !important;
-        min-width: 100% !important;
-        display: table;
-        overflow-x: auto;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
-    }
-    </style>
+      <style>
+        figure.table {
+          width: 100% !important;
+          margin: 0;
+          padding: 0;
+        }
+        table {
+          dir: ltr;
+          width: 100% !important;
+          min-width: 100% !important;
+          border-collapse: collapse;
+          margin: 0;
+          font-size: 0.875rem;
+          direction: rtl;
+          border: 1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'};
+        }
+        th, td {
+          padding: 0.75rem;
+          text-align: center;
+          border: 1px solid ${isDarkMode ? '#4B5563' : '#E5E7EB'};
+        }
+        th {
+          background-color: ${isDarkMode ? '#374151' : '#F3F4F6'};
+          font-weight: 600;
+          color: ${isDarkMode ? '#D1D5DB' : '#374151'};
+        }
+        td {
+          background-color: ${isDarkMode ? '#1F2937' : '#FFFFFF'};
+          color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
+        }
+        tr:nth-child(even) td {
+          background-color: ${isDarkMode ? '#2D3748' : '#F9FAFB'};
+        }
+        h2, h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin: 1rem 0 0.5rem;
+          color: ${isDarkMode ? '#D1D5DB' : '#1F2937'};
+          text-align: right;
+        }
+        p {
+          margin: 0.5rem 0;
+          color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
+          text-align: right;
+        }
+        ul {
+          list-style-type: disc;
+          padding-right: 1.25rem;
+          margin: 0.5rem 0;
+        }
+        li {
+          margin-bottom: 0.25rem;
+          color: ${isDarkMode ? '#E5E7EB' : '#1F2937'};
+          text-align: right;
+        }
+        a {
+          font-weight: bold;
+          color: ${isDarkMode ? '#60a5fa' : '#2563eb'};
+          text-decoration: underline;
+          cursor: pointer;
+        }
+        a:hover {
+          color: ${isDarkMode ? '#93c5fd' : '#1e40af'};
+        }
+        @media (max-width: 400px) {
+          figure.table {
+            width: 100% !important;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          table {
+            width: 100% !important;
+            min-width: 100% !important;
+            display: table;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+          }
+        }
+      </style>
     `;
 
     try {
       return renderableParts.map((part, index) => (
-          <div key={index}>
+          <div key={index} className="chat-message">
             {parse(tableStyles + part, {
               replace: (domNode) => {
-                if (domNode.type === 'tag') {
-                  return domToReact([domNode]);
+                if (domNode.type === 'tag' && domNode.name === 'a') {
+                  return (
+                      <a
+                          href={domNode.attribs.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            color: isDarkMode ? '#60a5fa' : '#2563eb',
+                            textDecoration: 'underline',
+                          }}
+                      >
+                        {domToReact(domNode.children)}
+                      </a>
+                  );
                 }
+                return domToReact([domNode]);
               },
             })}
           </div>
@@ -475,12 +501,9 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
   const fetchRootWizards = async () => {
     try {
       const data = await fetchWizards();
-      
       if (!Array.isArray(data)) {
         throw new Error("Invalid response format: expected an array");
       }
-
-      // Filter for root wizards (those without parent_id)
       const rootWizards = data.filter(wizard => !wizard.parent_id);
       setRootWizards(rootWizards);
       setCurrentWizards(rootWizards);
@@ -494,11 +517,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
 
   const handleWizardSelect = (wizardData) => {
     console.log('Wizard selected:', wizardData);
-    
-    // Process the wizard's context to ensure HTML is properly handled
     const processedContext = wizardData.context ? wizardData.context : '';
-    
-    // Add the wizard's context as an answer to the chat history
     setChatHistory((prev) => [
       ...prev,
       {
@@ -506,15 +525,13 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
         answer: processedContext,
         timestamp: new Date(),
         id: uuidv4(),
-        isStreaming: false, // Set to false since this is a complete response
+        isStreaming: false,
       },
     ]);
-
-    // Update currentWizards based on whether the wizard has children
     if (wizardData.children && wizardData.children.length > 0) {
       setCurrentWizards(wizardData.children);
     } else {
-      setCurrentWizards(rootWizards); // Reset to root wizards if no children
+      setCurrentWizards(rootWizards);
     }
   };
 
@@ -589,8 +606,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
                         strokeWidth="2"
                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"
                     />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                   </svg>
               ) : (
                   <svg
@@ -605,8 +621,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
                         strokeWidth="2"
                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"
                     />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                   </svg>
               )}
             </button>
@@ -853,8 +868,7 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                            d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
                     </svg>
                   </button>
               )}
@@ -866,7 +880,12 @@ const Chat = ({ onClose, chatHistory, setChatHistory }) => {
                   isDarkMode ? 'border-gray-800' : 'border-gray-200'
               } bg-opacity-80 backdrop-blur-sm sticky bottom-0`}
           >
-            <WizardButtons wizards={currentWizards} onWizardSelect={handleWizardSelect} />
+            <WizardButtons
+                wizards={currentWizards}
+                onWizardSelect={handleWizardSelect}
+                rootWizards={rootWizards}
+                setCurrentWizards={setCurrentWizards}
+            />
             <div className="flex items-center mt-6">
               <button
                   onClick={handleSubmit}
